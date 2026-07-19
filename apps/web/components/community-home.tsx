@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AuthButton } from "./auth-button";
+import { ThemeToggle } from "./theme-toggle";
 import { createSupabaseBrowserClient } from "../lib/supabase";
 
 type Board = { id: string; slug: string; name: string; description: string | null };
@@ -31,7 +32,7 @@ export function CommunityHome() {
 
   const visiblePosts = useMemo(() => posts.filter((post) => post.title.toLocaleLowerCase().includes(query.toLocaleLowerCase())), [posts, query]);
   return <main>
-    <header className="topbar"><a className="brand" href="/">YH Community</a><nav><a href="#boards">板块</a><a href="#activities">活动</a><a href="#posts">最新帖子</a></nav><AuthButton /></header>
+    <header className="topbar"><a className="brand" href="/">YH Community</a><nav><a href="#boards">板块</a><a href="#activities">活动</a><a href="#posts">最新帖子</a></nav><ThemeToggle /><AuthButton /></header>
     <section className="intro"><div><p className="eyebrow">Community</p><h1>分享作品，讨论你热爱的事。</h1><p>所有公开内容均经过审核。登录后可以发帖、评论、提交活动作品与投票。</p></div><a className="primaryAction" href="/posts/new">发布主题</a></section>
     {error && <p className="error">{error}</p>}
     <section id="boards" className="section"><div className="sectionHeading"><h2>讨论板块</h2></div><div className="boardGrid">{boards.map((board) => <a className="board" href={`/boards/${board.slug}`} key={board.id}><h3>{board.name}</h3><p>{board.description || "等待第一篇讨论"}</p></a>)}{boards.length === 0 && <p className="empty">尚无板块，请由管理员在后台创建。</p>}</div></section>

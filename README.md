@@ -12,12 +12,12 @@ A moderated forum and event-voting platform built with Next.js, Vue, TypeScript,
 ## Local setup
 
 1. Create a Supabase project and add its URL and Publishable Key to `apps/web/.env.local`. Set equivalent `VITE_` variables in `apps/admin/.env.local`.
-2. Apply `supabase/migrations/202607190001_initial_schema.sql` through the Supabase CLI or SQL editor.
+2. Apply all files in `supabase/migrations/` in filename order through the Supabase CLI or SQL editor. Existing projects that already ran the initial schema must also run `202607190002_add_super_admin_role.sql` and `202607190003_update_role_permissions.sql`.
 3. In Supabase Auth, enable email OTP/Magic Link and add both local and production callback URLs.
 4. Promote the first operator after their first login:
 
 ```sql
-update public.profiles set role = 'admin' where id = 'USER_UUID';
+update public.profiles set role = 'super_admin' where id = 'USER_UUID';
 ```
 
 5. Run `pnpm dev:web` and `pnpm dev:admin` in separate terminals.

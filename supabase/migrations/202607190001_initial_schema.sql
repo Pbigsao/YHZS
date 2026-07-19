@@ -1,6 +1,6 @@
 create extension if not exists pgcrypto;
 
-create type public.app_role as enum ('member', 'reviewer', 'admin');
+create type public.app_role as enum ('member', 'admin', 'super_admin');
 create type public.content_status as enum ('pending', 'approved', 'rejected', 'hidden', 'removed');
 create type public.activity_status as enum ('draft', 'published', 'closed', 'archived');
 
@@ -143,9 +143,9 @@ create function public.current_role() returns public.app_role
 language sql stable security definer set search_path = public
 as $$ select role from public.profiles where id = auth.uid() $$;
 create function public.is_staff() returns boolean language sql stable security definer set search_path = public
-as $$ select public.current_role() in ('reviewer', 'admin') $$;
+as $$ select public.current_role() in ('admin', 'super_admin') $$;
 create function public.is_admin() returns boolean language sql stable security definer set search_path = public
-as $$ select public.current_role() = 'admin' $$;
+as $$ select public.current_role() = 'super_admin' $$;
 create function public.is_active_member() returns boolean language sql stable security definer set search_path = public
 as $$ select exists(select 1 from public.profiles where id = auth.uid() and not is_banned) $$;
 
