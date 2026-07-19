@@ -11,7 +11,7 @@ A moderated forum and event-voting platform built with Next.js, Vue, TypeScript,
 
 ## Local setup
 
-1. Create a Supabase project and copy `.env.example` to `.env.local` for the public site. Set equivalent `VITE_` variables in `apps/admin/.env.local`.
+1. Create a Supabase project and add its URL and Publishable Key to `apps/web/.env.local`. Set equivalent `VITE_` variables in `apps/admin/.env.local`.
 2. Apply `supabase/migrations/202607190001_initial_schema.sql` through the Supabase CLI or SQL editor.
 3. In Supabase Auth, enable email OTP/Magic Link and add both local and production callback URLs.
 4. Promote the first operator after their first login:
