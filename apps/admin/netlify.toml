@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm --filter @yh/admin build"
+  publish = "apps/admin/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
