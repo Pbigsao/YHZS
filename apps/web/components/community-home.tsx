@@ -1,42 +1,74 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { AuthButton } from "./auth-button";
-import { ThemeToggle } from "./theme-toggle";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../lib/supabase";
 
-type Board = { id: string; slug: string; name: string; description: string | null };
-type Post = { id: string; title: string; created_at: string; board_id: string; profiles: { display_name: string } | null };
-type Activity = { id: string; title: string; slug: string; submission_ends_at: string; voting_ends_at: string };
+type FeedPost = {
+  id: string;
+  title: string;
+  created_at: string;
+  last_activity_at: string;
+  board_name: string;
+  board_slug: string;
+  author_name: string;
+  avatar_url: string | null;
+  reply_count: number;
+  like_count: number;
+  view_count: number;
+  is_pinned: boolean;
+};
+
+const filters = [
+  { value: "latest", label: "最新" },
+  { value: "hot", label: "热门" },
+  { value: "replies", label: "最新回复" }
+] as const;
 
 export function CommunityHome() {
-  const [boards, setBoards] = useState<Board[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [posts, setPosts] = useState<FeedPost[]>([]);
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<(typeof filters)[number]["value"]>("latest");
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    Promise.all([
-      supabase.from("boards").select("id,slug,name,description").order("position"),
-      supabase.from("posts").select("id,title,created_at,board_id,profiles!posts_author_id_fkey(display_name)").eq("status", "approved").order("created_at", { ascending: false }).limit(12),
-      supabase.from("activities").select("id,title,slug,submission_ends_at,voting_ends_at").eq("status", "published").order("voting_ends_at").limit(6)
-    ]).then(([boardsResult, postsResult, activitiesResult]) => {
-      if (boardsResult.error || postsResult.error || activitiesResult.error) setError("加载社区内容失败，请检查 Supabase 配置和 RLS 策略。");
-      setBoards(boardsResult.data ?? []);
-      setPosts((postsResult.data as Post[] | null) ?? []);
-      setActivities((activitiesResult.data as Activity[] | null) ?? []);
-    });
+    const client = createSupabaseBrowserClient();
+    void client.auth.getUser().then(({ data }) => setIsSignedIn(Boolean(data.user)));
+    const { data: listener } = client.auth.onAuthStateChange((_event, session) => setIsSignedIn(Boolean(session?.user)));
+    return () => listener.subscription.unsubscribe();
   }, []);
 
-  const visiblePosts = useMemo(() => posts.filter((post) => post.title.toLocaleLowerCase().includes(query.toLocaleLowerCase())), [posts, query]);
-  return <main>
-    <header className="topbar"><a className="brand" href="/">YH Community</a><nav><a href="#boards">板块</a><a href="#activities">活动</a><a href="#posts">最新帖子</a></nav><ThemeToggle /><AuthButton /></header>
-    <section className="intro"><div><p className="eyebrow">Community</p><h1>分享作品，讨论你热爱的事。</h1><p>所有公开内容均经过审核。登录后可以发帖、评论、提交活动作品与投票。</p></div><a className="primaryAction" href="/posts/new">发布主题</a></section>
-    {error && <p className="error">{error}</p>}
-    <section id="boards" className="section"><div className="sectionHeading"><h2>讨论板块</h2></div><div className="boardGrid">{boards.map((board) => <a className="board" href={`/boards/${board.slug}`} key={board.id}><h3>{board.name}</h3><p>{board.description || "等待第一篇讨论"}</p></a>)}{boards.length === 0 && <p className="empty">尚无板块，请由管理员在后台创建。</p>}</div></section>
-    <section id="activities" className="section"><div className="sectionHeading"><h2>正在进行的活动</h2></div><div className="activityGrid">{activities.map((activity) => <a className="activity" href={`/activities/${activity.slug}`} key={activity.id}><p className="eyebrow">作品征集 / 投票</p><h3>{activity.title}</h3><p>投稿截止 {new Date(activity.submission_ends_at).toLocaleDateString("zh-CN")}</p><span>查看活动</span></a>)}{activities.length === 0 && <p className="empty">暂时没有公开活动。</p>}</div></section>
-    <section id="posts" className="section"><div className="sectionHeading"><h2>最新主题</h2><input aria-label="搜索主题" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索已审核主题" /></div><div className="postList">{visiblePosts.map((post) => <a href={`/posts/${post.id}`} className="postRow" key={post.id}><div><h3>{post.title}</h3><p>{post.profiles?.display_name || "匿名成员"} · {new Date(post.created_at).toLocaleDateString("zh-CN")}</p></div><span>查看</span></a>)}{visiblePosts.length === 0 && <p className="empty">没有匹配的主题。</p>}</div></section>
-  </main>;
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    const timer = window.setTimeout(() => {
+      void createSupabaseBrowserClient().rpc("search_public_posts", { search_query: query, sort_by: sort, target_board: null }).then(({ data, error: requestError }) => {
+        if (!active) return;
+        setPosts((data as FeedPost[] | null) ?? []);
+        setError(requestError?.message ?? "");
+        setLoading(false);
+      });
+    }, 180);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [query, sort]);
+
+  return <section className="feedPage">
+    <div className="feedToolbar">
+      <div className="filterTabs" role="tablist" aria-label="主题排序">{filters.map((filter) => <button key={filter.value} type="button" className={sort === filter.value ? "active" : ""} onClick={() => setSort(filter.value)}>{filter.label}</button>)}</div>
+      <label className="searchField"><span className="srOnly">搜索主题</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索主题" /></label>
+    </div>
+    {error && <p className="notice errorNotice">{error}</p>}
+    <div className="topicList" aria-live="polite">
+      {loading && <p className="emptyState">正在加载主题...</p>}
+      {!loading && posts.map((post) => <Link className="topicRow" href={`/posts/${post.id}`} key={post.id}>
+        <div className="avatar" aria-hidden="true">{post.avatar_url ? <img src={post.avatar_url} alt="" /> : post.author_name.slice(0, 1)}</div>
+        <div className="topicCopy"><h1>{post.is_pinned && <span className="pinned">置顶</span>}{post.title}</h1><p>{post.author_name}<span>{post.board_name}</span><time dateTime={post.last_activity_at}>{new Date(post.last_activity_at).toLocaleDateString("zh-CN")}</time></p></div>
+        <div className="topicStats" aria-label={`回复 ${post.reply_count}，喜欢 ${post.like_count}，浏览 ${post.view_count}`}><span>回复 {post.reply_count}</span><span>喜欢 {post.like_count}</span><span>浏览 {post.view_count}</span></div>
+      </Link>)}
+      {!loading && posts.length === 0 && <p className="emptyState">没有符合条件的主题。</p>}
+    </div>
+    {isSignedIn && <Link className="floatingPost" href="/posts/new" aria-label="发布主题" title="发布主题">+</Link>}
+  </section>;
 }
