@@ -1,3 +1,4 @@
+
 create extension if not exists pgcrypto;
 
 create type public.app_role as enum ('member', 'admin', 'super_admin');

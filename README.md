@@ -1,18 +1,17 @@
-# YH Community
+# Community
 
-A moderated forum and event-voting platform built with Next.js, Vue, TypeScript, Netlify, and Supabase.
+A moderated community and event-voting platform built with Next.js, TypeScript, Netlify, and Supabase.
 
-## Applications
+## Structure
 
-- `apps/web`: public Next.js community site.
-- `apps/admin`: Vue/Vite moderation and operations console.
+- `apps/web`: the only web application, built with the Next.js App Router.
 - `packages/core`: shared types and upload validation constants.
-- `supabase/migrations`: database schema, RLS policies, Storage policies, and vote transaction.
+- `supabase/migrations`: database schema, RLS policies, Storage policies, and RPCs.
 
 ## Local setup
 
-1. Create a Supabase project and add its URL and Publishable Key to `apps/web/.env.local`. Set equivalent `VITE_` variables in `apps/admin/.env.local`.
-2. Apply all files in `supabase/migrations/` in filename order through the Supabase CLI or SQL editor. Existing projects that already ran the initial schema must also run `202607190002_add_super_admin_role.sql` and `202607190003_update_role_permissions.sql`.
+1. Create a Supabase project and add its URL and Publishable Key to `apps/web/.env.local`.
+2. In Supabase Dashboard, open SQL Editor, create a new query, and run the complete contents of `supabase/SQL_EDITOR_CATCH_UP.sql` to apply the later database upgrades to an existing installation.
 3. In Supabase Auth, enable email OTP/Magic Link and add both local and production callback URLs.
 4. Promote the first operator after their first login:
 
@@ -20,10 +19,10 @@ A moderated forum and event-voting platform built with Next.js, Vue, TypeScript,
 update public.profiles set role = 'super_admin' where id = 'USER_UUID';
 ```
 
-5. Run `pnpm dev:web` and `pnpm dev:admin` in separate terminals.
+5. Run `pnpm dev:web`.
 
 ## Netlify
 
-Create two Netlify sites from this repository. Use `apps/web/netlify.toml` for the public site and `apps/admin/netlify.toml` for the admin site. Configure the corresponding public environment variables in each site's Netlify settings.
+Create one Netlify site from this repository. The root `netlify.toml` builds the Next.js application. Configure the public Supabase environment variables in the site's Netlify settings.
 
-Do not expose a Supabase service-role key in either application.
+Do not expose a Supabase service-role key in the browser application.
