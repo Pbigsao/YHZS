@@ -1,4 +1,3 @@
-
 insert into public.boards (slug, name, description, position)
 values
   ('general', '综合交流', '日常讨论与社区公告。', 10),

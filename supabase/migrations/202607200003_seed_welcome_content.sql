@@ -1,4 +1,3 @@
-
 create or replace function public.seed_community_examples(seed_author uuid) returns void
 language plpgsql security definer set search_path = public as $$
 begin
