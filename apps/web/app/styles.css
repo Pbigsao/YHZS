@@ -67,7 +67,7 @@
   --content-width: 900px;
   --sidebar-left-width: 240px;
   --sidebar-right-width: 320px;
-  --topnav-height: 64px;
+  --topnav-height: 52px;
 
   /* --- Transition --- */
   --transition-fast: 200ms ease;
@@ -1716,7 +1716,7 @@ h2 { font-size: var(--font-h2); }
    18. AUTH PAGES (Login / Register)
    ============================================================= */
 .auth-page {
-  min-height: 100vh;
+  height: calc(100vh - var(--topnav-height));
   display: flex;
   align-items: center;
   position: relative;

@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <TopNav />
       {isAuthPage ? (
-        <main className="content-main">{children}</main>
+        <>{children}</>
       ) : (
         <div className="app-layout">
           <SidebarNav boards={boards} activities={activities} />
