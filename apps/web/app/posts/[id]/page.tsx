@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 
 type RichDocument = { content?: Array<{ content?: Array<{ text?: string }> }> };
 type Post = { id: string; title: string; body: RichDocument; created_at: string; profiles: Array<{ display_name: string }>; boards: Array<{ name: string; slug: string }> };
@@ -43,81 +40,67 @@ export default function PostPage() {
 
   if (!post) {
     return (
-      <>
-        <TopNav />
-        <div className="app-layout">
-          <SidebarNav />
-          <main className="content-main">
-            <div className="page-header">
-              <a href="/" className="back-link">← 返回社区</a>
-            </div>
-            <p className="text-muted">{message || "加载中..."}</p>
-          </main>
-          <SidebarInfo />
+      <main>
+        <div className="page-header">
+          <a href="/" className="back-link">← 返回社区</a>
         </div>
-      </>
+        <p className="text-muted">{message || "加载中..."}</p>
+      </main>
     );
   }
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
-          <div className="page-header">
-            <a href={`/boards/${post.boards[0]?.slug ?? ""}`} className="back-link">
-              ← {post.boards[0]?.name || "返回板块"}
-            </a>
-          </div>
-
-          <article className="detail-card">
-            <h1 className="detail-card__title">{post.title}</h1>
-            <p className="detail-card__meta">
-              {post.profiles[0]?.display_name || "成员"} · {new Date(post.created_at).toLocaleString("zh-CN")}
-            </p>
-            <div className="detail-card__body">{documentText(post.body)}</div>
-          </article>
-
-          <section className="content-section">
-            <div className="content-section__heading">
-              <h2>评论</h2>
-            </div>
-
-            <form className="form-card" onSubmit={addComment}>
-              <label className="form-card__label">发表评论</label>
-              <textarea
-                className="form-card__textarea"
-                value={body}
-                minLength={2}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder="写下你的想法..."
-                required
-              />
-              <button className="btn btn-primary" type="submit">提交审核</button>
-            </form>
-
-            <div className="post-feed" style={{ marginTop: 24 }}>
-              {comments.length > 0 ? comments.map((comment) => (
-                <div className="comment-card" key={comment.id}>
-                  <div className="comment-card__header">
-                    <span className="comment-card__author">{comment.profiles[0]?.display_name || "成员"}</span>
-                    <span className="comment-card__date">
-                      {new Date(comment.created_at).toLocaleDateString("zh-CN")}
-                    </span>
-                  </div>
-                  <p className="comment-card__body">{documentText(comment.body)}</p>
-                </div>
-              )) : (
-                <p className="text-muted">暂时没有已审核评论。</p>
-              )}
-            </div>
-
-            {message && <p className="alert alert-info" style={{ marginTop: 16 }}>{message}</p>}
-          </section>
-        </main>
-        <SidebarInfo />
+    <main>
+      <div className="page-header">
+        <a href={`/boards/${post.boards[0]?.slug ?? ""}`} className="back-link">
+          ← {post.boards[0]?.name || "返回板块"}
+        </a>
       </div>
-    </>
+
+      <article className="detail-card">
+        <h1 className="detail-card__title">{post.title}</h1>
+        <p className="detail-card__meta">
+          {post.profiles[0]?.display_name || "成员"} · {new Date(post.created_at).toLocaleString("zh-CN")}
+        </p>
+        <div className="detail-card__body">{documentText(post.body)}</div>
+      </article>
+
+      <section className="content-section">
+        <div className="content-section__heading">
+          <h2>评论</h2>
+        </div>
+
+        <form className="form-card" onSubmit={addComment}>
+          <label className="form-card__label">发表评论</label>
+          <textarea
+            className="form-card__textarea"
+            value={body}
+            minLength={2}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="写下你的想法..."
+            required
+          />
+          <button className="btn btn-primary" type="submit">提交审核</button>
+        </form>
+
+        <div className="post-feed" style={{ marginTop: 24 }}>
+          {comments.length > 0 ? comments.map((comment) => (
+            <div className="comment-card" key={comment.id}>
+              <div className="comment-card__header">
+                <span className="comment-card__author">{comment.profiles[0]?.display_name || "成员"}</span>
+                <span className="comment-card__date">
+                  {new Date(comment.created_at).toLocaleDateString("zh-CN")}
+                </span>
+              </div>
+              <p className="comment-card__body">{documentText(comment.body)}</p>
+            </div>
+          )) : (
+            <p className="text-muted">暂时没有已审核评论。</p>
+          )}
+        </div>
+
+        {message && <p className="alert alert-info" style={{ marginTop: 16 }}>{message}</p>}
+      </section>
+    </main>
   );
 }
