@@ -37,24 +37,26 @@ export function TopNav() {
           <IconSearch className="search-box__icon" size={18} />
           <input className="search-box__input" type="text" placeholder="搜索帖子、社团成员、作品..." />
         </div>
-        <div className="top-nav__actions">
-          <a href="/posts/new" className="btn btn-primary">
-            <IconPlus size={18} /> 发布主题
-          </a>
-        </div>
-        <div className="top-nav__auth">
-          {userEmail ? (
-            <button
-              className="btn btn-ghost btn--sm"
-              onClick={() => createSupabaseBrowserClient().auth.signOut()}
-            >
-              退出 {userEmail}
-            </button>
-          ) : (
-            <a href="/auth" className="btn btn-primary">
-              登录
+        <div className="top-nav__right">
+          <div className="top-nav__actions">
+            <a href="/posts/new" className="btn btn-primary">
+              <IconPlus size={18} /> 发布主题
             </a>
-          )}
+          </div>
+          <div className="top-nav__auth">
+            {userEmail ? (
+              <button
+                className="btn btn-ghost btn--sm"
+                onClick={() => createSupabaseBrowserClient().auth.signOut()}
+              >
+                退出 {userEmail}
+              </button>
+            ) : (
+              <a href="/auth" className="btn btn-primary">
+                登录
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </header>

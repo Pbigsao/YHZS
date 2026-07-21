@@ -254,7 +254,10 @@ h2 { font-size: var(--font-h2); }
   flex-shrink: 0;
 }
 
-.top-nav__auth {
+.top-nav__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   margin-left: auto;
 }
 
