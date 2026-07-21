@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
-import { IMAGE_RULES, validateImage } from "@yh/core";
+import { IMAGE_RULES, validateImage } from "../../../lib/core";
 import { TopNav } from "../../../components/top-nav";
 import { SidebarNav } from "../../../components/sidebar-nav";
 import { SidebarInfo } from "../../../components/sidebar-info";

@@ -1,48 +1,94 @@
 "use client";
 
-import { FormEvent, Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { createSupabaseBrowserClient } from "../../lib/supabase";
-
-type View = "form" | "sending" | "sent" | "error";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  return <Suspense fallback={null}><LoginContent /></Suspense>;
-}
-
-function LoginContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
-  const [view, setView] = useState<View>("form");
-  const [error, setError] = useState("");
-  const nextPath = searchParams.get("next")?.startsWith("/") && !searchParams.get("next")?.startsWith("//") ? searchParams.get("next")! : "/";
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    void createSupabaseBrowserClient().auth.getUser().then(({ data }) => {
-      if (data.user) router.replace(nextPath);
-    });
-  }, [nextPath, router]);
-
-  async function sendLink(event: FormEvent) {
-    event.preventDefault();
-    setView("sending");
-    setError("");
-    const { error: requestError } = await createSupabaseBrowserClient().auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}${nextPath}` }
-    });
-    if (requestError) {
-      setError(requestError.message);
-      setView("error");
-      return;
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !password) return;
+    setLoading(true);
+    setMessage("");
+    const supabase = createSupabaseBrowserClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setMessage(error.message);
+      setIsError(true);
+    } else {
+      setMessage("登录成功！");
+      setIsError(false);
+      setTimeout(() => router.push("/"), 600);
     }
-    setView("sent");
+    setLoading(false);
   }
 
-  return <section className="authPage">
-    <div className="authPanel">
-      {view === "sent" ? <div className="authConfirmation" aria-live="polite"><p className="authKicker">邮件已发送</p><h1>检查你的收件箱</h1><p>登录链接已发送至 <strong>{email}</strong>。</p><button className="primaryButton" type="button" onClick={() => setView("form")}>使用其他邮箱</button></div> : <><p className="authKicker">账户登录</p><h1>继续进入社区</h1><p className="authIntro">使用邮箱登录，无需设置密码。</p><form className="authForm" onSubmit={sendLink}><label htmlFor="email">邮箱地址</label><input id="email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(event) => { setEmail(event.target.value); if (view === "error") setView("form"); }} placeholder="name@example.com" required autoFocus /><button className="primaryButton authSubmit" disabled={view === "sending"}>{view === "sending" ? "正在发送..." : "发送登录链接"}</button>{view === "error" && <p className="authError" role="alert">{error}</p>}</form><p className="authFootnote">登录链接将发送到你的邮箱。</p></>}
+  return (
+    <div className="auth-page">
+      <div className="auth-page__bg" />
+
+      <div className="auth-page__card">
+        <a href="/" className="auth-page__logo">
+          <img src="/logo.png" alt="萤火之森漫研社" width={36} height={36} style={{borderRadius:8}} />
+          <span>萤火之森漫研社论坛</span>
+        </a>
+
+        <h1 className="auth-page__title">欢迎回来</h1>
+        <p className="auth-page__subtitle">登录你的萤火之森账号</p>
+
+        <form className="auth-page__form" onSubmit={handleLogin}>
+          <div className="form-group">
+            <label className="form-label">邮箱地址</label>
+            <input
+              className="input input--glass"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              required
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">密码</label>
+            <input
+              className="input input--glass"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="输入密码"
+              required
+              minLength={6}
+              autoComplete="current-password"
+            />
+          </div>
+
+          {message && (
+            <div className={`alert ${isError ? "alert-error" : "alert-info"}`}>
+              {message}
+            </div>
+          )}
+
+          <button className="btn btn-primary btn--full" type="submit" disabled={loading}>
+            {loading ? "处理中..." : "登录"}
+          </button>
+        </form>
+
+        <div className="auth-page__footer">
+          还没有账号？{" "}
+          <a href="/register" className="link-btn">
+            立即注册
+          </a>
+        </div>
+      </div>
     </div>
-  </section>;
+  );
 }

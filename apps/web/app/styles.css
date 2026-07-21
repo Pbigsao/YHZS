@@ -1,5 +1,5 @@
 /* ============================================================
-   YH Community — Dark Theme Design System
+   萤火之森漫研社论坛 — Dark Theme Design System
    University Anime Club Forum
    ============================================================ */
 
@@ -52,6 +52,7 @@
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-h1: 22px;
   --font-h2: 18px;
+  --font-title: 20px;
   --font-body: 15px;
   --font-caption: 13px;
   --font-small: 12px;
@@ -682,6 +683,42 @@ h2 { font-size: var(--font-h2); }
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* Link button (inline text button) */
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.link-btn:hover {
+  color: var(--brand-hover);
+  text-decoration: underline;
+}
+
+/* Top nav skeleton loader */
+.top-nav__skeleton {
+  width: 60px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 /* =============================================================
@@ -1673,6 +1710,202 @@ h2 { font-size: var(--font-h2); }
   border: none;
   border-top: 1px solid var(--border-subtle);
   margin: var(--space-5) 0;
+}
+
+/* =============================================================
+   18. AUTH PAGES (Login / Register)
+   ============================================================= */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page__bg {
+  position: fixed;
+  inset: 0;
+  background: url("/auth-bg.png") center / cover no-repeat;
+  z-index: -1;
+}
+
+.auth-page__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(24,24,24,0.78) 0%, rgba(24,24,24,0.35) 50%, rgba(24,24,24,0.15) 100%);
+}
+
+.auth-page__card {
+  position: relative;
+  z-index: 1;
+  margin-left: 10vw;
+  width: 100%;
+  max-width: 420px;
+  padding: 48px 44px;
+  background: rgba(32, 32, 32, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
+}
+
+.auth-page__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+}
+
+.auth-page__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+.auth-page__subtitle {
+  font-size: var(--font-body);
+  color: var(--text-muted);
+  margin-bottom: var(--space-6);
+  line-height: 1.5;
+}
+
+.auth-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.auth-page__footer {
+  text-align: center;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: var(--font-caption);
+  color: var(--text-muted);
+}
+
+/* Glass input (for auth pages over background image) */
+.input--glass {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-primary) !important;
+}
+
+.input--glass::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.input--glass:focus {
+  border-color: var(--brand-primary) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* =============================================================
+   18.5 MODAL SYSTEM
+   ============================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: var(--space-5);
+  animation: modal-fade-in 200ms ease;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  padding: var(--space-7);
+  animation: modal-slide-up 250ms ease;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-card__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-avatar);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-card__close:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.modal-card__header {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.modal-card__title {
+  font-size: var(--font-title);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.modal-card__subtitle {
+  font-size: var(--font-caption);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.modal-card__footer {
+  text-align: center;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--font-caption);
+  color: var(--text-muted);
 }
 
 /* =============================================================
