@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../lib/supabase";
-import { LoginModal } from "./login-modal";
 
 export function AuthButton() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
@@ -23,26 +21,20 @@ export function AuthButton() {
 
   if (loading) return <div className="top-nav__skeleton" />;
 
+  if (userEmail) {
+    return (
+      <button
+        className="btn btn-ghost btn--sm"
+        onClick={() => createSupabaseBrowserClient().auth.signOut()}
+      >
+        {userEmail}
+      </button>
+    );
+  }
+
   return (
-    <>
-      {userEmail ? (
-        <button
-          className="btn btn-ghost btn--sm"
-          onClick={() => {
-            createSupabaseBrowserClient().auth.signOut();
-          }}
-        >
-          {userEmail}
-        </button>
-      ) : (
-        <button
-          className="btn btn-ghost btn--sm"
-          onClick={() => setModalOpen(true)}
-        >
-          登录
-        </button>
-      )}
-      <LoginModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
+    <a href="/auth" className="btn btn-ghost btn--sm">
+      登录
+    </a>
   );
 }
