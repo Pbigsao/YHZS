@@ -41,20 +41,20 @@ export function TopNav() {
           <a href="/posts/new" className="btn btn-primary">
             <IconPlus size={18} /> 发布主题
           </a>
-          <div className="top-nav__auth">
-            {userEmail ? (
-              <button
-                className="btn btn-ghost btn--sm"
-                onClick={() => createSupabaseBrowserClient().auth.signOut()}
-              >
-                退出 {userEmail}
-              </button>
-            ) : (
-              <a href="/auth" className="btn btn-primary">
-                登录
-              </a>
-            )}
-          </div>
+        </div>
+        <div className="top-nav__auth">
+          {userEmail ? (
+            <button
+              className="btn btn-ghost btn--sm"
+              onClick={() => createSupabaseBrowserClient().auth.signOut()}
+            >
+              退出 {userEmail}
+            </button>
+          ) : (
+            <a href="/auth" className="btn btn-primary">
+              登录
+            </a>
+          )}
         </div>
       </div>
     </header>
