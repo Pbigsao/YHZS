@@ -3,10 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
-
 type Board = { id: string; name: string };
 
 export default function NewPostPage() {
@@ -30,42 +26,35 @@ export default function NewPostPage() {
     setMessage("主题已提交审核，通过后会公开显示。"); setTitle(""); setBody(""); setFiles([]);
   }
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
-          <div className="page-header">
-            <a href="/" className="back-link">← 返回社区</a>
-            <h1 className="page-header__title" style={{marginTop:16}}>发布主题</h1>
-            <p className="page-header__description">主题提交后会进入审核队列。</p>
-          </div>
-          <form className="form-card" onSubmit={submit}>
-            <div className="form-group">
-              <label className="form-label">板块</label>
-              <select className="select" value={boardId} onChange={(e) => setBoardId(e.target.value)} required>
-                {boards.map((board) => <option value={board.id} key={board.id}>{board.name}</option>)}
-              </select>
-            </div>
-            <div className="form-group">
-              <label className="form-label">标题</label>
-              <input className="input" value={title} minLength={2} maxLength={160} onChange={(e) => setTitle(e.target.value)} required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">内容</label>
-              <textarea className="textarea" value={body} minLength={2} onChange={(e) => setBody(e.target.value)} required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">图片（JPEG、PNG、WebP 或 GIF，单张不超过 5 MB）</label>
-              <input className="input" type="file" accept={IMAGE_RULES.acceptedTypes.join(",")} multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
-              <span className="form-hint">最多上传 {IMAGE_RULES.maxPostImages} 张图片</span>
-            </div>
-            <button className="btn btn-primary" type="submit">提交审核</button>
-            {message && <p className={`alert ${message.includes('失败') || message.includes('超过') ? 'alert-error' : 'alert-info'}`} style={{marginTop:12}}>{message}</p>}
-          </form>
-        </main>
-        <SidebarInfo />
+    <main>
+      <div className="page-header">
+        <a href="/" className="back-link">← 返回社区</a>
+        <h1 className="page-header__title" style={{marginTop:16}}>发布主题</h1>
+        <p className="page-header__description">主题提交后会进入审核队列。</p>
       </div>
-    </>
+      <form className="form-card" onSubmit={submit}>
+        <div className="form-group">
+          <label className="form-label">板块</label>
+          <select className="select" value={boardId} onChange={(e) => setBoardId(e.target.value)} required>
+            {boards.map((board) => <option value={board.id} key={board.id}>{board.name}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">标题</label>
+          <input className="input" value={title} minLength={2} maxLength={160} onChange={(e) => setTitle(e.target.value)} required />
+        </div>
+        <div className="form-group">
+          <label className="form-label">内容</label>
+          <textarea className="textarea" value={body} minLength={2} onChange={(e) => setBody(e.target.value)} required />
+        </div>
+        <div className="form-group">
+          <label className="form-label">图片（JPEG、PNG、WebP 或 GIF，单张不超过 5 MB）</label>
+          <input className="input" type="file" accept={IMAGE_RULES.acceptedTypes.join(",")} multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
+          <span className="form-hint">最多上传 {IMAGE_RULES.maxPostImages} 张图片</span>
+        </div>
+        <button className="btn btn-primary" type="submit">提交审核</button>
+        {message && <p className={`alert ${message.includes('失败') || message.includes('超过') ? 'alert-error' : 'alert-info'}`} style={{marginTop:12}}>{message}</p>}
+      </form>
+    </main>
   );
 }

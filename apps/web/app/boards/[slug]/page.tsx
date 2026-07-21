@@ -2,9 +2,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 import { PostCard } from "../../../components/post-card";
 
 type Board = { id: string; name: string; description: string | null };
@@ -26,43 +23,36 @@ export default function BoardPage() {
   }, [slug]);
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
-          <div className="page-header">
-            <a href="/" className="back-link">← 返回社区</a>
-          </div>
-          {board ? (
-            <>
-              <div className="page-header">
-                <h1 className="page-header__title">{board.name}</h1>
-                {board.description && <p className="page-header__description">{board.description}</p>}
-                <a href="/posts/new" className="btn btn-primary" style={{marginTop:16}}>发布主题</a>
-              </div>
-              <div className="post-feed" style={{marginTop:24}}>
-                {posts.length > 0 ? posts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={{
-                      id: post.id,
-                      title: post.title,
-                      created_at: post.created_at,
-                      author: { display_name: post.profiles?.display_name || "成员" },
-                    }}
-                  />
-                )) : (
-                  <p className="text-muted">暂无已审核主题。</p>
-                )}
-              </div>
-            </>
-          ) : (
-            <p>{message || "加载中..."}</p>
-          )}
-        </main>
-        <SidebarInfo />
+    <main>
+      <div className="page-header">
+        <a href="/" className="back-link">← 返回社区</a>
       </div>
-    </>
+      {board ? (
+        <>
+          <div className="page-header">
+            <h1 className="page-header__title">{board.name}</h1>
+            {board.description && <p className="page-header__description">{board.description}</p>}
+            <a href="/posts/new" className="btn btn-primary" style={{marginTop:16}}>发布主题</a>
+          </div>
+          <div className="post-feed" style={{marginTop:24}}>
+            {posts.length > 0 ? posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={{
+                  id: post.id,
+                  title: post.title,
+                  created_at: post.created_at,
+                  author: { display_name: post.profiles?.display_name || "成员" },
+                }}
+              />
+            )) : (
+              <p className="text-muted">暂无已审核主题。</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <p>{message || "加载中..."}</p>
+      )}
+    </main>
   );
 }

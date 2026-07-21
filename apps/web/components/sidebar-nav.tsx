@@ -1,27 +1,26 @@
 "use client";
 import { IconHome, IconCompass, IconFlame, IconHeart, IconMessageCircle, IconImage, IconHelpCircle, IconCalendar, IconFolderOpen, IconSparkles, IconShield } from "./icons";
 
+type Board = { id: string; slug: string; name: string };
+type Activity = { id: string; slug: string; title: string };
+
 const NAV_ITEMS = [
   { section: "浏览", items: [
-    { icon: IconHome, label: "首页", href: "/", active: true },
+    { icon: IconHome, label: "首页", href: "/" },
     { icon: IconCompass, label: "最新", href: "/?tab=latest" },
     { icon: IconFlame, label: "热门", href: "/?tab=hot" },
     { icon: IconHeart, label: "关注", href: "/?tab=following" },
   ]},
-  { section: "板块", items: [
-    { icon: IconMessageCircle, label: "综合交流", href: "/boards/general" },
-    { icon: IconImage, label: "作品分享", href: "/boards/artworks" },
-    { icon: IconHelpCircle, label: "问题求助", href: "/boards/help" },
-    { icon: IconCalendar, label: "活动通知", href: "/boards/events" },
-    { icon: IconFolderOpen, label: "资源分享", href: "/boards/resources" },
-    { icon: IconSparkles, label: "动漫推荐", href: "/boards/anime-rec" },
-  ]},
-  { section: "管理", items: [
-    { icon: IconShield, label: "社团公告", href: "/boards/announcements" },
-  ]},
 ];
 
-export function SidebarNav({ currentPath = "/" }: { currentPath?: string }) {
+export function SidebarNav({ currentPath = "/", boards = [], activities = [] }: {
+  currentPath?: string;
+  boards?: Board[];
+  activities?: Activity[];
+}) {
+  const boardItems = boards.map((b) => ({ icon: IconMessageCircle, label: b.name, href: `/boards/${b.slug}` }));
+  const activityItems = activities.map((a) => ({ icon: IconCalendar, label: a.title, href: `/activities/${a.slug}` }));
+
   return (
     <nav className="nav-sidebar sidebar-left">
       {NAV_ITEMS.map((group) => (
@@ -39,6 +38,38 @@ export function SidebarNav({ currentPath = "/" }: { currentPath?: string }) {
           ))}
         </div>
       ))}
+
+      {boardItems.length > 0 && (
+        <div className="nav-sidebar__group">
+          <div className="nav-sidebar__group-title">板块</div>
+          {boardItems.map((item) => (
+            <a key={item.label} href={item.href} className="nav-sidebar__item">
+              <IconMessageCircle size={20} />
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {activityItems.length > 0 && (
+        <div className="nav-sidebar__group">
+          <div className="nav-sidebar__group-title">活动</div>
+          {activityItems.map((item) => (
+            <a key={item.label} href={item.href} className="nav-sidebar__item">
+              <IconCalendar size={20} />
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <div className="nav-sidebar__group">
+        <div className="nav-sidebar__group-title">管理</div>
+        <a href="/boards/announcements" className="nav-sidebar__item">
+          <IconShield size={20} />
+          <span>社团公告</span>
+        </a>
+      </div>
     </nav>
   );
 }
