@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { PostCard } from "../../../components/post-card";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 
 type Board = { id: string; name: string; description: string | null };
 type Post = {
@@ -60,11 +57,7 @@ export default function BoardPage() {
   }, [slug]);
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
+    <main className="content-main">
           <div className="page-header">
             <a href="/" className="back-link">← 返回社区</a>
           </div>
@@ -104,9 +97,6 @@ export default function BoardPage() {
           ) : (
             <p className="text-muted">{message || "板块不存在或不可访问。"}</p>
           )}
-        </main>
-        <SidebarInfo />
-      </div>
-    </>
+    </main>
   );
 }

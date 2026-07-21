@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 
 type RichDocument = {
   content?: Array<{ content?: Array<{ text?: string }> }>;
@@ -109,11 +106,7 @@ export default function PostPage() {
   }
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
+    <main className="content-main">
           <div className="page-header">
             <a href="/" className="back-link">← 返回社区</a>
           </div>
@@ -181,9 +174,6 @@ export default function PostPage() {
               {message}
             </p>
           )}
-        </main>
-        <SidebarInfo />
-      </div>
-    </>
+    </main>
   );
 }

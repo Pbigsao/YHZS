@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
 
 type Activity = {
@@ -176,11 +173,7 @@ export default function ActivityPage() {
   }
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
+    <main className="content-main">
           <div className="page-header">
             <a href="/" className="back-link">← 返回社区</a>
           </div>
@@ -267,9 +260,6 @@ export default function ActivityPage() {
               })()}
             </>
           )}
-        </main>
-        <SidebarInfo />
-      </div>
-    </>
+    </main>
   );
 }

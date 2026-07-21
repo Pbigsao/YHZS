@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
-import { TopNav } from "../../../components/top-nav";
-import { SidebarNav } from "../../../components/sidebar-nav";
-import { SidebarInfo } from "../../../components/sidebar-info";
 
 type Board = { id: string; name: string };
 
@@ -123,11 +120,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <>
-      <TopNav />
-      <div className="app-layout">
-        <SidebarNav />
-        <main className="content-main">
+    <main className="content-main">
           <div className="page-header">
             <a href="/" className="back-link">← 返回社区</a>
             <h1 className="page-header__title" style={{ marginTop: 16 }}>发布主题</h1>
@@ -193,9 +186,6 @@ export default function NewPostPage() {
               </p>
             )}
           </form>
-        </main>
-        <SidebarInfo />
-      </div>
-    </>
+    </main>
   );
 }
