@@ -12,6 +12,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function AuthPage() {
     setEmail("");
     setPassword("");
     setConfirm("");
+    setUsername("");
     setMessage("");
     setIsError(false);
   }
@@ -66,7 +68,10 @@ export default function AuthPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+      options: {
+        data: { username },
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
     });
     if (error) {
       setMessage(error.message);
@@ -128,19 +133,33 @@ export default function AuthPage() {
           </div>
 
           {mode === "register" && (
-            <div className="form-group">
-              <label className="form-label">确认密码</label>
-              <input
-                className="input input--glass"
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                placeholder="再次输入密码"
-                required
-                minLength={6}
-                autoComplete="new-password"
-              />
-            </div>
+            <>
+              <div className="form-group">
+                <label className="form-label">用户名</label>
+                <input
+                  className="input input--glass"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="你希望在社区中显示的名称"
+                  required
+                  autoComplete="username"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">确认密码</label>
+                <input
+                  className="input input--glass"
+                  type="password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="再次输入密码"
+                  required
+                  minLength={6}
+                  autoComplete="new-password"
+                />
+              </div>
+            </>
           )}
 
           {message && (
