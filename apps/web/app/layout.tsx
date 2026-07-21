@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./styles.css";
+
+const qingSongShouXieTi = localFont({
+  src: "./fonts/QingSongShouXieTi.ttf",
+  variable: "--font-community",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   title: "YH Community - 动漫社团交流社区",
@@ -8,13 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh-CN">
-      <head>
-        {/* MiSans font from CDN */}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@latest/lib/Normal/MiSans-Regular.min.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@latest/lib/Normal/MiSans-Medium.min.css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@latest/lib/Normal/MiSans-Bold.min.css" />
-      </head>
+    <html lang="zh-CN" data-theme="dark" className={qingSongShouXieTi.variable} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
