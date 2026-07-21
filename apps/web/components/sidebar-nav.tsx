@@ -38,11 +38,13 @@ export function SidebarNav({ currentPath = "/", boards = [], activities = [] }: 
   boards?: Board[];
   activities?: Activity[];
 }) {
-  const boardItems = boards.map((b) => ({
-    icon: BOARD_ICONS[b.slug] ?? DEFAULT_BOARD_ICON,
-    label: b.name,
-    href: `/boards/${b.slug}`,
-  }));
+  const boardItems = boards
+    .filter((b) => b.slug !== "announcements")
+    .map((b) => ({
+      icon: BOARD_ICONS[b.slug] ?? DEFAULT_BOARD_ICON,
+      label: b.name,
+      href: `/boards/${b.slug}`,
+    }));
   const activityItems = activities.map((a) => ({
     icon: IconCalendar,
     label: a.title,
