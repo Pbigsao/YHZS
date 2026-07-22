@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      { cookies: { getAll: () => cookieStore.getAll(), setAll: (cookiesToSet) => { for (const { name, value, ...opts } of cookiesToSet) cookieStore.set(name, value, opts); } } }
+      { cookies: { getAll: () => cookieStore.getAll(), setAll: (cookiesToSet) => { for (const { name, value, options } of cookiesToSet) cookieStore.set(name, value, options); } } }
     );
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(`${origin}${next}`);
