@@ -1023,3 +1023,16 @@ create policy "community images readable with content"
     )
   );
 -- END 202607220008_allow_signed_community_image_reads.sql
+
+-- BEGIN 202607220009_publish_comments_immediately.sql
+drop policy if exists "comments member create" on public.comments;
+create policy "comments member create"
+  on public.comments
+  for insert
+  with check (
+    author_id = auth.uid()
+    and public.is_active_member()
+    and status = 'approved'
+    and exists(select 1 from public.posts where id = post_id and status = 'approved')
+  );
+-- END 202607220009_publish_comments_immediately.sql
