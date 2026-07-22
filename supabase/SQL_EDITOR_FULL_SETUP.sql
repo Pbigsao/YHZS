@@ -182,11 +182,14 @@ $$;
 
 create function public.enforce_image_limit() returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  if tg_table_name = 'post_images' and (select count(*) from public.post_images where post_id = new.post_id) >= 5 then
-    raise exception 'A post may contain at most 5 images';
-  end if;
-  if tg_table_name = 'submission_images' and (select count(*) from public.submission_images where submission_id = new.submission_id) >= 10 then
-    raise exception 'A submission may contain at most 10 images';
+  if tg_table_name = 'post_images' then
+    if (select count(*) from public.post_images where post_id = new.post_id) >= 5 then
+      raise exception 'A post may contain at most 5 images';
+    end if;
+  elsif tg_table_name = 'submission_images' then
+    if (select count(*) from public.submission_images where submission_id = new.submission_id) >= 10 then
+      raise exception 'A submission may contain at most 10 images';
+    end if;
   end if;
   return new;
 end;
@@ -946,3 +949,46 @@ create policy "authenticated users delete own avatars"
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 -- END 202607220005_add_public_avatar_storage.sql
+
+-- BEGIN 202607220006_add_announcements_board.sql
+insert into public.boards (slug, name, description, position)
+values ('announcements', '社团公告', '社团官方公告与重要通知。', 0)
+on conflict (slug) do nothing;
+
+drop policy if exists "posts member create" on public.posts;
+create policy "posts member create"
+  on public.posts
+  for insert
+  with check (
+    author_id = auth.uid()
+    and public.is_active_member()
+    and status = 'pending'
+    and exists (
+      select 1
+      from public.boards
+      where id = board_id
+        and (slug <> 'announcements' or public.is_staff())
+    )
+  );
+-- END 202607220006_add_announcements_board.sql
+
+-- BEGIN 202607220007_fix_image_limit_trigger.sql
+create or replace function public.enforce_image_limit()
+returns trigger
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  if tg_table_name = 'post_images' then
+    if (select count(*) from public.post_images where post_id = new.post_id) >= 5 then
+      raise exception 'A post may contain at most 5 images';
+    end if;
+  elsif tg_table_name = 'submission_images' then
+    if (select count(*) from public.submission_images where submission_id = new.submission_id) >= 10 then
+      raise exception 'A submission may contain at most 10 images';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+-- END 202607220007_fix_image_limit_trigger.sql

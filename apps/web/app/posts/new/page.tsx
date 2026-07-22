@@ -5,7 +5,7 @@ import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
 import { formatImageUploadFailures, uploadCommunityImages } from "../../../lib/image-upload";
 
-type Board = { id: string; name: string };
+type Board = { id: string; name: string; slug: string };
 
 export default function NewPostPage() {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -19,14 +19,22 @@ export default function NewPostPage() {
   useEffect(() => {
     let cancelled = false;
 
-    createSupabaseBrowserClient()
-      .from("boards")
-      .select("id,name")
-      .order("position")
-      .then(({ data }) => {
+    const client = createSupabaseBrowserClient();
+    void Promise.all([
+      client.from("boards").select("id,name,slug").order("position"),
+      client.auth.getUser(),
+    ]).then(async ([{ data }, { data: auth }]) => {
         if (cancelled) return;
-        setBoards(data ?? []);
-        setBoardId(data?.[0]?.id ?? "");
+        let isStaff = false;
+        if (auth.user) {
+          const { data: profile } = await client.from("profiles").select("role").eq("id", auth.user.id).single();
+          isStaff = profile?.role === "admin" || profile?.role === "super_admin";
+        }
+        if (cancelled) return;
+        const availableBoards = (data ?? []).filter((board) => board.slug !== "announcements" || isStaff);
+        setBoards(availableBoards);
+        const requestedBoard = new URLSearchParams(window.location.search).get("board");
+        setBoardId(availableBoards.find((board) => board.slug === requestedBoard)?.id ?? availableBoards[0]?.id ?? "");
       });
 
     return () => { cancelled = true; };
