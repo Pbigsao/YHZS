@@ -37,9 +37,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const toggleMenu = useCallback(() => setMobileMenuOpen(v => !v), []);
   const closeMenu = useCallback(() => setMobileMenuOpen(false), []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu();
+    };
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeMenu, mobileMenuOpen]);
+
   return (
     <>
-      <TopNav onToggleMenu={toggleMenu} />
+      <TopNav onToggleMenu={toggleMenu} isMenuOpen={mobileMenuOpen} />
       {isAuthPage ? (
         <>{children}</>
       ) : (
@@ -52,7 +69,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile sidebar drawer */}
       <div className={`mobile-drawer-overlay ${mobileMenuOpen ? "mobile-drawer-overlay--open" : ""}`} onClick={closeMenu} />
-      <aside className={`mobile-drawer ${mobileMenuOpen ? "mobile-drawer--open" : ""}`}>
+      <aside
+        className={`mobile-drawer ${mobileMenuOpen ? "mobile-drawer--open" : ""}`}
+        id="mobile-navigation"
+        aria-label="网站导航"
+        aria-hidden={!mobileMenuOpen}
+      >
         <div className="mobile-drawer__header">
           <button className="mobile-drawer__close" onClick={closeMenu} aria-label="关闭菜单">
             <IconX size={22} />

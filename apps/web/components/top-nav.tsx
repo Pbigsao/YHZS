@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { IconSearch, IconPlus, IconMenu } from "./icons";
 import { createSupabaseBrowserClient } from "../lib/supabase";
 
-export function TopNav({ onToggleMenu }: { onToggleMenu?: () => void }) {
+export function TopNav({ onToggleMenu, isMenuOpen = false }: { onToggleMenu?: () => void; isMenuOpen?: boolean }) {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -30,18 +30,33 @@ export function TopNav({ onToggleMenu }: { onToggleMenu?: () => void }) {
   return (
     <header className="top-nav">
       <div className="top-nav__inner">
-        <button className="top-nav__hamburger" onClick={onToggleMenu} aria-label="打开菜单">
+        <button
+          className="top-nav__hamburger"
+          onClick={onToggleMenu}
+          aria-label="打开菜单"
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation"
+        >
           <IconMenu size={22} />
         </button>
         <a href="/" className="top-nav__logo">
           <img src="/logo.png" alt="萤火之森漫研社" width={32} height={32} style={{borderRadius:8}} />
           <span className="top-nav__logo-text">萤火之森漫研社论坛</span>
         </a>
-        <div className={`search-box top-nav__search ${searchOpen ? "top-nav__search--open" : ""}`}>
+        <div
+          id="site-search"
+          className={`search-box top-nav__search ${searchOpen ? "top-nav__search--open" : ""}`}
+        >
           <IconSearch className="search-box__icon" size={18} />
           <input className="search-box__input" type="text" placeholder="搜索帖子、社团成员、作品..." />
         </div>
-        <button className="top-nav__search-toggle" onClick={() => setSearchOpen(v => !v)} aria-label="搜索">
+        <button
+          className="top-nav__search-toggle"
+          onClick={() => setSearchOpen(v => !v)}
+          aria-label="搜索"
+          aria-expanded={searchOpen}
+          aria-controls="site-search"
+        >
           <IconSearch size={20} />
         </button>
         <div className="top-nav__right">

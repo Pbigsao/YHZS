@@ -62,6 +62,7 @@ export function SidebarNav({ currentPath = "/", boards = [], activities = [], on
               key={item.label}
               href={item.href}
               className={`nav-sidebar__item ${currentPath === item.href ? "nav-sidebar__item--active" : ""}`}
+              onClick={onNavigate}
             >
               <item.icon size={20} />
               <span>{item.label}</span>
@@ -78,6 +79,7 @@ export function SidebarNav({ currentPath = "/", boards = [], activities = [], on
               key={item.label}
               href={item.href}
               className="nav-sidebar__item"
+              onClick={onNavigate}
             >
               <item.icon size={20} />
               <span>{item.label}</span>
@@ -94,6 +96,7 @@ export function SidebarNav({ currentPath = "/", boards = [], activities = [], on
               key={item.label}
               href={item.href}
               className="nav-sidebar__item"
+              onClick={onNavigate}
             >
               <item.icon size={20} />
               <span>{item.label}</span>
@@ -104,7 +107,7 @@ export function SidebarNav({ currentPath = "/", boards = [], activities = [], on
 
       <div className="nav-sidebar__group">
         <div className="nav-sidebar__group-title">管理</div>
-        <a href="/boards/announcements" className="nav-sidebar__item">
+        <a href="/boards/announcements" className="nav-sidebar__item" onClick={onNavigate}>
           <IconShield size={20} />
           <span>社团公告</span>
         </a>
