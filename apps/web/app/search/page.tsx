@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { IconEye, IconHeart, IconMessageCircle } from "../../components/icons";
+import { IconEye, IconMessageCircle } from "../../components/icons";
+import { PostLikeButton } from "../../components/post-like-button";
 import { createSupabaseBrowserClient } from "../../lib/supabase";
 
 type SearchResult = {
@@ -80,7 +81,7 @@ function SearchResults() {
             <Link className="post-card__title" href={`/posts/${post.id}`}>{post.title}</Link>
             <div className="post-card__actions">
               <span className="post-card__action"><IconEye size={18} /> {post.view_count}</span>
-              <span className="post-card__action"><IconHeart size={18} /> {post.like_count}</span>
+              <PostLikeButton postId={post.id} initialLikeCount={post.like_count} />
               <span className="post-card__action"><IconMessageCircle size={18} /> {post.reply_count}</span>
             </div>
           </article>

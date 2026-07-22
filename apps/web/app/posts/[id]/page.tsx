@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
+import { PostLikeButton } from "../../../components/post-like-button";
 
 type RichDocument = {
   content?: Array<{ content?: Array<{ text?: string }> }>;
@@ -12,6 +13,7 @@ type Post = {
   id: string;
   title: string;
   body: RichDocument;
+  status: "pending" | "approved" | "rejected" | "hidden" | "removed";
   created_at: string;
   profiles: Array<{ display_name: string }>;
   boards: Array<{ name: string; slug: string }>;
@@ -48,7 +50,7 @@ export default function PostPage() {
       const { data, error } = await supabase
         .from("posts")
         .select(
-          "id,title,body,created_at,profiles!posts_author_id_fkey(display_name),boards!posts_board_id_fkey(name,slug)"
+          "id,title,body,status,created_at,profiles!posts_author_id_fkey(display_name),boards!posts_board_id_fkey(name,slug)"
         )
         .eq("id", id)
         .single();
@@ -67,7 +69,6 @@ export default function PostPage() {
         .from("comments")
         .select("id,body,created_at,profiles!comments_author_id_fkey(display_name)")
         .eq("post_id", id)
-        .eq("status", "approved")
         .order("created_at");
 
       if (cancelled) return;
@@ -122,6 +123,8 @@ export default function PostPage() {
                   {new Date(post.created_at).toLocaleString("zh-CN")}
                 </p>
                 <div className="detail-card__body">{documentText(post.body)}</div>
+                <div className="detail-card__actions"><PostLikeButton postId={post.id} /></div>
+                {post.status !== "approved" && <p className="detail-card__notice">这是待审核内容预览，仅审核人员和作者可见。</p>}
               </article>
 
               <section className="content-section">
@@ -129,7 +132,7 @@ export default function PostPage() {
                   <h2>评论</h2>
                 </div>
 
-                <form className="form-card" onSubmit={addComment}>
+                {post.status === "approved" ? <form className="form-card" onSubmit={addComment}>
                   <label className="form-card__label">发表评论</label>
                   <textarea
                     className="form-card__textarea"
@@ -142,7 +145,7 @@ export default function PostPage() {
                   <button className="btn btn-primary" type="submit">
                     提交审核
                   </button>
-                </form>
+                </form> : <p className="text-muted">待审核主题暂不开放评论。</p>}
 
                 <div className="post-feed" style={{ marginTop: 24 }}>
                   {comments.length > 0 ? (

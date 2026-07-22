@@ -551,6 +551,46 @@ h2 { font-size: var(--font-h2); }
   opacity: 0.7;
 }
 
+.post-card__action--button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.post-card__action--button:hover,
+.post-card__action--active {
+  color: var(--danger);
+}
+
+.post-card__action--button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.post-like {
+  position: relative;
+}
+
+.post-like__message {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(100% + 4px);
+  left: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-tag);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: var(--font-small);
+}
+
+.detail-card__actions { margin-top: var(--space-4); }
+.detail-card__notice { margin-top: var(--space-3); color: var(--accent); font-size: var(--font-caption); }
+
 /* Post list container */
 .post-list {
   display: flex;

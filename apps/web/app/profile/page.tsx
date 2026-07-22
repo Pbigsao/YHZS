@@ -272,6 +272,16 @@ export default function ProfilePage() {
       )}
 
       {isSuperAdmin && (
+        <>
+        <section className="staff-section" aria-labelledby="announcement-heading">
+          <div className="section-heading">
+            <div>
+              <h2 id="announcement-heading" className="section-heading__title"><IconShield size={20} /> 社团公告</h2>
+              <p className="staff-section__description">创建、编辑公告板块，并发布社团公告。</p>
+            </div>
+            <Link className="btn btn-primary btn--sm" href="/admin/announcements">管理公告</Link>
+          </div>
+        </section>
         <section className="staff-section" aria-labelledby="members-heading">
           <div className="section-heading">
             <div>
@@ -293,6 +303,7 @@ export default function ProfilePage() {
             </div>
           )}
         </section>
+        </>
       )}
     </section>
   );

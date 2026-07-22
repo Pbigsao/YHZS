@@ -1,5 +1,6 @@
 "use client";
-import { IconEye, IconHeart, IconMessageCircle, IconBookmark } from "./icons";
+import { IconEye, IconMessageCircle, IconBookmark } from "./icons";
+import { PostLikeButton } from "./post-like-button";
 
 type PostCardData = {
   id: string;
@@ -60,9 +61,7 @@ export function PostCard({ post }: { post: PostCardData }) {
         <span className="post-card__action">
           <IconEye size={18} /> {post.stats?.views ?? 0}
         </span>
-        <span className="post-card__action">
-          <IconHeart size={18} /> {post.stats?.likes ?? 0}
-        </span>
+        <PostLikeButton postId={post.id} initialLikeCount={post.stats?.likes ?? 0} />
         <span className="post-card__action">
           <IconMessageCircle size={18} /> {post.stats?.comments ?? 0}
         </span>
