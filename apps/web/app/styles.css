@@ -2288,23 +2288,7 @@ h2 { font-size: var(--font-h2); }
   .auth-page__title {
     font-size: 24px;
   }
-}
 
-@media (max-width: 480px) {
-  .top-nav__logo-text {
-    display: none;
-  }
-
-  .top-nav__right .top-nav__auth .btn {
-    max-width: 72px;
-  }
-
-  .top-nav__hamburger,
-  .top-nav__search-toggle {
-    width: 34px;
-    height: 34px;
-  }
-}
   .top-nav__search-toggle {
     display: flex;
     align-items: center;
@@ -2344,9 +2328,21 @@ h2 { font-size: var(--font-h2); }
   .top-nav__search--open .search-box__input {
     max-width: 100%;
   }
+}
 
-  .top-nav__right .top-nav__actions .btn span {
+@media (max-width: 480px) {
+  .top-nav__logo-text {
     display: none;
+  }
+
+  .top-nav__right .top-nav__auth .btn {
+    max-width: 72px;
+  }
+
+  .top-nav__hamburger,
+  .top-nav__search-toggle {
+    width: 34px;
+    height: 34px;
   }
 }
 
