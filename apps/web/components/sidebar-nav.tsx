@@ -33,10 +33,11 @@ const STATIC_NAV_ITEMS = [
   ]},
 ];
 
-export function SidebarNav({ currentPath = "/", boards = [], activities = [] }: {
+export function SidebarNav({ currentPath = "/", boards = [], activities = [], onNavigate }: {
   currentPath?: string;
   boards?: Board[];
   activities?: Activity[];
+  onNavigate?: () => void;
 }) {
   const boardItems = boards
     .filter((b) => b.slug !== "announcements")

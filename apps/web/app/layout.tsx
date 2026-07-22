@@ -11,7 +11,10 @@ const qingSongShouXieTi = localFont({
 
 export const metadata: Metadata = {
   title: "萤火之森漫研社论坛",
-  description: "萤火之森漫研社论坛 — 分享作品、参与活动、讨论你热爱的一切。"
+  description: "萤火之森漫研社论坛 — 分享作品、参与活动、讨论你热爱的一切。",
+  icons: {
+    icon: "/logo.png"
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

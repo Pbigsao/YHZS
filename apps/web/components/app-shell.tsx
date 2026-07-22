@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { TopNav } from "./top-nav";
+import { IconX } from "./icons";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarInfo } from "./sidebar-info";
 import { createSupabaseBrowserClient } from "../lib/supabase";
@@ -16,6 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [boards, setBoards] = useState<Board[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [stats, setStats] = useState({ members: 0, posts: 0, todayPosts: 0, online: 0 });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthPage) return;
@@ -32,9 +34,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   }, [isAuthPage]);
 
+  const toggleMenu = useCallback(() => setMobileMenuOpen(v => !v), []);
+  const closeMenu = useCallback(() => setMobileMenuOpen(false), []);
+
   return (
     <>
-      <TopNav />
+      <TopNav onToggleMenu={toggleMenu} />
       {isAuthPage ? (
         <>{children}</>
       ) : (
@@ -44,6 +49,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarInfo stats={stats} />
         </div>
       )}
+
+      {/* Mobile sidebar drawer */}
+      <div className={`mobile-drawer-overlay ${mobileMenuOpen ? "mobile-drawer-overlay--open" : ""}`} onClick={closeMenu} />
+      <aside className={`mobile-drawer ${mobileMenuOpen ? "mobile-drawer--open" : ""}`}>
+        <div className="mobile-drawer__header">
+          <button className="mobile-drawer__close" onClick={closeMenu} aria-label="关闭菜单">
+            <IconX size={22} />
+          </button>
+        </div>
+        <SidebarNav boards={boards} activities={activities} onNavigate={closeMenu} />
+      </aside>
     </>
   );
 }
