@@ -64,9 +64,15 @@ export default function PostPage() {
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return setMessage("请先登录后评论。");
     const richBody = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: body }] }] };
-    const { error } = await supabase.from("comments").insert({ post_id: id, author_id: auth.user.id, body: richBody, body_markdown: body });
-    setMessage(error ? error.message : "评论已提交审核。");
-    if (!error) setBody("");
+    const { data, error } = await supabase
+      .from("comments")
+      .insert({ post_id: id, author_id: auth.user.id, body: richBody, body_markdown: body, status: "approved" })
+      .select("id,body,created_at,profiles!comments_author_id_fkey(display_name)")
+      .single();
+    if (error) return setMessage(error.message);
+    setComments((items) => [...items, data as Comment]);
+    setBody("");
+    setMessage("评论已发布。");
   }
 
   if (loading) return <main className="content-main"><p className="text-muted">加载中...</p></main>;
@@ -74,5 +80,5 @@ export default function PostPage() {
   const author = post.profiles[0];
   const content = documentText(post.body) || post.body_markdown;
 
-  return <main className="content-main"><div className="page-header"><a href="/" className="back-link">返回社区</a></div><article className="detail-card"><h1 className="detail-card__title">{post.title}</h1><p className="detail-card__meta">{author?.avatar_url && <img className="detail-card__avatar" src={author.avatar_url} alt="" />}{author?.display_name || "成员"} · {new Date(post.created_at).toLocaleString("zh-CN")}</p><div className="detail-card__body">{content}</div>{imageUrls.length > 0 && <div className={`post-card__images post-card__images--${Math.min(imageUrls.length, 3)}`}>{imageUrls.map((url) => <div className="post-card__image" key={url}><img src={url} alt="帖子图片" /></div>)}</div>}<div className="detail-card__actions"><PostLikeButton postId={post.id} /></div>{post.status !== "approved" && <p className="detail-card__notice">这是待审核内容预览，仅作者和审核人员可见。</p>}</article><section className="content-section"><div className="content-section__heading"><h2>评论</h2></div>{post.status === "approved" ? <form className="form-card" onSubmit={addComment}><label className="form-card__label">发表评论</label><textarea className="form-card__textarea" value={body} minLength={2} onChange={(event) => setBody(event.target.value)} required /><button className="btn btn-primary" type="submit">提交审核</button></form> : <p className="text-muted">待审核主题暂不开放评论。</p>}<div className="post-feed" style={{ marginTop: 24 }}>{comments.map((comment) => <div className="comment-card" key={comment.id}><div className="comment-card__header"><span className="comment-card__author">{comment.profiles[0]?.display_name || "成员"}</span><span className="comment-card__date">{new Date(comment.created_at).toLocaleDateString("zh-CN")}</span></div><p className="comment-card__body">{documentText(comment.body)}</p></div>)}{comments.length === 0 && <p className="text-muted">暂无可见评论。</p>}</div></section>{message && <p className="alert alert-info">{message}</p>}</main>;
+  return <main className="content-main"><div className="page-header"><a href="/" className="back-link">返回社区</a></div><article className="detail-card"><h1 className="detail-card__title">{post.title}</h1><p className="detail-card__meta">{author?.avatar_url && <img className="detail-card__avatar" src={author.avatar_url} alt="" />}{author?.display_name || "成员"} · {new Date(post.created_at).toLocaleString("zh-CN")}</p><div className="detail-card__body">{content}</div>{imageUrls.length > 0 && <div className={`post-card__images post-card__images--${Math.min(imageUrls.length, 3)}`}>{imageUrls.map((url) => <div className="post-card__image" key={url}><img src={url} alt="帖子图片" /></div>)}</div>}<div className="detail-card__actions"><PostLikeButton postId={post.id} /></div>{post.status !== "approved" && <p className="detail-card__notice">这是待审核内容预览，仅作者和审核人员可见。</p>}</article><section className="content-section"><div className="content-section__heading"><h2>评论</h2></div>{post.status === "approved" ? <form className="form-card" onSubmit={addComment}><label className="form-card__label">发表评论</label><textarea className="form-card__textarea" value={body} minLength={2} onChange={(event) => setBody(event.target.value)} required /><button className="btn btn-primary" type="submit">发表评论</button></form> : <p className="text-muted">待审核主题暂不开放评论。</p>}<div className="post-feed" style={{ marginTop: 24 }}>{comments.map((comment) => <div className="comment-card" key={comment.id}><div className="comment-card__header"><span className="comment-card__author">{comment.profiles[0]?.display_name || "成员"}</span><span className="comment-card__date">{new Date(comment.created_at).toLocaleDateString("zh-CN")}</span></div><p className="comment-card__body">{documentText(comment.body)}</p></div>)}{comments.length === 0 && <p className="text-muted">暂无可见评论。</p>}</div></section>{message && <p className="alert alert-info">{message}</p>}</main>;
 }
