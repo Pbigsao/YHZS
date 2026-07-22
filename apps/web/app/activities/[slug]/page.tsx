@@ -101,7 +101,7 @@ export default function ActivityPage() {
       content: [{ type: "paragraph", content: [{ type: "text", text: body }] }],
     };
 
-    const { data: submission, error } = await supabase
+    const { data: createdSubmission, error } = await supabase
       .from("activity_submissions")
       .insert({
         activity_id: activity.id,
@@ -112,8 +112,26 @@ export default function ActivityPage() {
       .select("id")
       .single();
 
-    if (error || !submission) {
+    let submission = createdSubmission;
+    if (error?.code === "23505") {
+      const { data: existingSubmission, error: existingError } = await supabase
+        .from("activity_submissions")
+        .select("id")
+        .eq("activity_id", activity.id)
+        .eq("author_id", auth.user.id)
+        .eq("status", "pending")
+        .maybeSingle();
+      if (!existingError && existingSubmission) submission = existingSubmission;
+    }
+
+    if (error && !submission) {
       setMessage(error?.message ?? "提交作品失败。");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!submission) {
+      setMessage("Unable to create the submission.");
       setSubmitting(false);
       return;
     }
