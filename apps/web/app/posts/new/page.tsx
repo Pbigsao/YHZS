@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
+import { formatImageUploadFailures, uploadCommunityImages } from "../../../lib/image-upload";
 
 type Board = { id: string; name: string };
 
@@ -82,32 +83,19 @@ export default function NewPostPage() {
       return;
     }
 
-    // Upload images with transaction-like handling
-    const imageResults = await Promise.allSettled(
-      files.map(async (file, position) => {
-        const path = `${auth.user!.id}/posts/${post.id}/${crypto.randomUUID()}`;
-        const { error: uploadError } = await supabase
-          .storage
-          .from("community-images")
-          .upload(path, file);
+    const failures = await uploadCommunityImages({
+      supabase,
+      userId: auth.user.id,
+      scope: "posts",
+      parentId: post.id,
+      files,
+      createImageRecord: (storagePath, position) => supabase
+        .from("post_images")
+        .insert({ post_id: post.id, storage_path: storagePath, position }),
+    });
 
-        if (uploadError) throw new Error(uploadError.message);
-
-        const { error: imageError } = await supabase
-          .from("post_images")
-          .insert({
-            post_id: post.id,
-            storage_path: path,
-            position,
-          });
-
-        if (imageError) throw new Error(imageError.message);
-      })
-    );
-
-    const failed = imageResults.filter((r) => r.status === "rejected");
-    if (failed.length > 0) {
-      setMessage(`${failed.length} 张图片上传失败，请重试。`);
+    if (failures.length > 0) {
+      setMessage(formatImageUploadFailures(failures));
       setSubmitting(false);
       return;
     }
