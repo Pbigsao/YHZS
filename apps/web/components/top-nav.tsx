@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { IconMenu, IconPlus, IconSearch, IconUser } from "./icons";
 import { createSupabaseBrowserClient } from "../lib/supabase";
 
@@ -11,8 +12,10 @@ type CurrentMember = {
 };
 
 export function TopNav({ onToggleMenu, isMenuOpen = false }: { onToggleMenu?: () => void; isMenuOpen?: boolean }) {
+  const router = useRouter();
   const [member, setMember] = useState<CurrentMember | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadMember = useCallback(async () => {
     const supabase = createSupabaseBrowserClient();
@@ -52,6 +55,14 @@ export function TopNav({ onToggleMenu, isMenuOpen = false }: { onToggleMenu?: ()
     setMember(null);
   }
 
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    setSearchOpen(false);
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
+
   return (
     <header className="top-nav">
       <div className="top-nav__inner">
@@ -68,13 +79,16 @@ export function TopNav({ onToggleMenu, isMenuOpen = false }: { onToggleMenu?: ()
           <img src="/logo.png" alt="萤火之森漫研社" width={32} height={32} />
           <span className="top-nav__logo-text">萤火之森漫研社论坛</span>
         </a>
-        <div
+        <form
           id="site-search"
           className={`search-box top-nav__search ${searchOpen ? "top-nav__search--open" : ""}`}
+          onSubmit={submitSearch}
         >
-          <IconSearch className="search-box__icon" size={18} />
-          <input className="search-box__input" type="text" placeholder="搜索帖子、社团成员、作品..." />
-        </div>
+          <button className="search-box__submit" type="submit" aria-label="搜索">
+            <IconSearch size={18} />
+          </button>
+          <input className="search-box__input" type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="搜索已审核主题..." />
+        </form>
         <button
           className="top-nav__search-toggle"
           onClick={() => setSearchOpen((value) => !value)}

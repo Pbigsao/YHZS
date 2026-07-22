@@ -153,17 +153,17 @@ export default function ProfilePage() {
     const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "image";
     const storagePath = `${profile.id}/avatars/${crypto.randomUUID()}.${extension}`;
     const supabase = createSupabaseBrowserClient();
-    const { error: uploadError } = await supabase.storage.from("community-images").upload(storagePath, file, { upsert: false });
+    const { error: uploadError } = await supabase.storage.from("community-avatars").upload(storagePath, file, { upsert: false });
     if (uploadError) {
       setUploadingAvatar(false);
       setMessage(`头像上传失败：${uploadError.message}`);
       return;
     }
-    const { data: publicUrl } = supabase.storage.from("community-images").getPublicUrl(storagePath);
+    const { data: publicUrl } = supabase.storage.from("community-avatars").getPublicUrl(storagePath);
     const { error: profileError } = await supabase.from("profiles").update({ avatar_url: publicUrl.publicUrl, updated_at: new Date().toISOString() }).eq("id", profile.id);
     setUploadingAvatar(false);
     if (profileError) {
-      await supabase.storage.from("community-images").remove([storagePath]);
+      await supabase.storage.from("community-avatars").remove([storagePath]);
       setMessage(`头像保存失败：${profileError.message}`);
       return;
     }
