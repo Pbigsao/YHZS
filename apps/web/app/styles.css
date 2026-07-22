@@ -1580,6 +1580,31 @@ h2 { font-size: var(--font-h2); }
   margin-bottom: var(--space-3);
 }
 
+.comment-card__identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.comment-card__avatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: var(--radius-avatar);
+  object-fit: cover;
+}
+
+.comment-card__avatar--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--brand-primary);
+  font-size: var(--font-caption);
+  font-weight: 600;
+}
+
 .comment-card__author {
   font-size: var(--font-body);
   font-weight: 600;
