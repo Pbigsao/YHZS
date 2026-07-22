@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "../../../lib/supabase";
 import { IMAGE_RULES, validateImage } from "../../../lib/core";
+import { formatImageUploadFailures, uploadCommunityImages } from "../../../lib/image-upload";
 
 type Activity = {
   id: string;
@@ -117,32 +118,19 @@ export default function ActivityPage() {
       return;
     }
 
-    // Upload images with error handling
-    const imageResults = await Promise.allSettled(
-      files.map(async (file, position) => {
-        const path = `${auth.user!.id}/submissions/${submission.id}/${crypto.randomUUID()}`;
-        const { error: uploadError } = await supabase
-          .storage
-          .from("community-images")
-          .upload(path, file);
+    const failures = await uploadCommunityImages({
+      supabase,
+      userId: auth.user.id,
+      scope: "submissions",
+      parentId: submission.id,
+      files,
+      createImageRecord: (storagePath, position) => supabase
+        .from("submission_images")
+        .insert({ submission_id: submission.id, storage_path: storagePath, position }),
+    });
 
-        if (uploadError) throw new Error(uploadError.message);
-
-        const { error: imageError } = await supabase
-          .from("submission_images")
-          .insert({
-            submission_id: submission.id,
-            storage_path: path,
-            position,
-          });
-
-        if (imageError) throw new Error(imageError.message);
-      })
-    );
-
-    const failed = imageResults.filter((r) => r.status === "rejected");
-    if (failed.length > 0) {
-      setMessage(`${failed.length} 张图片上传失败，请重试。`);
+    if (failures.length > 0) {
+      setMessage(formatImageUploadFailures(failures));
       setSubmitting(false);
       return;
     }
