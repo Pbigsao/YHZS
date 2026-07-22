@@ -261,6 +261,7 @@ export default function ProfilePage() {
                     {item.excerpt && <p className="moderation-item__excerpt">{item.excerpt}</p>}
                   </div>
                   <div className="moderation-item__actions">
+                    {item.href && <Link className="btn btn-ghost btn--sm" href={item.href}>预览</Link>}
                     <button className="btn btn-primary btn--sm" disabled={actingOn === item.id} onClick={() => void moderate(item, "approved")}><IconCheck size={16} />通过</button>
                     <button className="btn btn-ghost btn--sm moderation-item__reject" disabled={actingOn === item.id} onClick={() => void moderate(item, "rejected")}><IconX size={16} />驳回</button>
                   </div>
@@ -268,6 +269,18 @@ export default function ProfilePage() {
               ))}
             </div>
           )}
+        </section>
+      )}
+
+      {isStaff && (
+        <section className="staff-section" aria-labelledby="content-management-heading">
+          <div className="section-heading">
+            <div>
+              <h2 id="content-management-heading" className="section-heading__title"><IconShield size={20} /> 内容管理</h2>
+              <p className="staff-section__description">管理主题状态，隐藏或软删除违规内容。</p>
+            </div>
+            <Link className="btn btn-primary btn--sm" href="/admin/content">管理内容</Link>
+          </div>
         </section>
       )}
 
@@ -279,7 +292,7 @@ export default function ProfilePage() {
               <h2 id="announcement-heading" className="section-heading__title"><IconShield size={20} /> 社团公告</h2>
               <p className="staff-section__description">创建、编辑公告板块，并发布社团公告。</p>
             </div>
-            <Link className="btn btn-primary btn--sm" href="/admin/announcements">管理公告</Link>
+            <div className="profile-admin-links"><Link className="btn btn-ghost btn--sm" href="/admin/boards">板块管理</Link><Link className="btn btn-primary btn--sm" href="/admin/announcements">管理公告</Link></div>
           </div>
         </section>
         <section className="staff-section" aria-labelledby="members-heading">

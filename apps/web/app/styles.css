@@ -66,7 +66,7 @@
   --layout-max: 1600px;
   --content-width: 900px;
   --sidebar-left-width: 240px;
-  --sidebar-right-width: 320px;
+  --sidebar-right-width: 260px;
   --topnav-height: 52px;
 
   /* --- Transition --- */
@@ -171,6 +171,10 @@ h2 { font-size: var(--font-h2); }
   grid-template-columns: 1fr;
 }
 
+.app-layout--right-collapsed {
+  grid-template-columns: var(--sidebar-left-width) 1fr 44px;
+}
+
 .content-main {
   padding: var(--space-5);
   min-width: 0;
@@ -195,6 +199,39 @@ h2 { font-size: var(--font-h2); }
   background-color: var(--bg-secondary);
   border-left: 1px solid var(--border-subtle);
 }
+
+.sidebar-right--collapsed {
+  overflow: hidden;
+  padding: var(--space-3) 4px;
+}
+
+.sidebar-right__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 0 var(--space-3) auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-tag);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.sidebar-right__toggle:hover { color: var(--brand-primary); border-color: var(--brand-primary); }
+.sidebar-right--collapsed .sidebar-right__toggle { margin: 0 auto; transform: rotate(180deg); }
+.profile-admin-links { display: flex; gap: var(--space-2); }
+.board-management-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr); gap: var(--space-5); }
+.content-management-list { border-top: 1px solid var(--border-subtle); }
+.management-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--border-subtle); }
+.management-row__body { flex: 1; min-width: 0; }
+.management-row__meta { display: flex; flex-wrap: wrap; gap: var(--space-2); color: var(--text-muted); font-size: var(--font-small); }
+.management-row__title { display: block; margin-top: var(--space-1); color: var(--text-primary); font-weight: 600; overflow-wrap: anywhere; }
+.management-row__excerpt { display: -webkit-box; margin-top: var(--space-1); overflow: hidden; color: var(--text-muted); font-size: var(--font-caption); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.management-row__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+.management-row__remove { color: var(--danger); }
+@media (max-width: 768px) { .board-management-layout { grid-template-columns: 1fr; } .management-row { align-items: flex-start; flex-direction: column; } .management-row__actions { width: 100%; justify-content: stretch; } .management-row__actions .btn { flex: 1; justify-content: center; } }
 
 /* =============================================================
    4. TOP NAVIGATION
@@ -590,6 +627,8 @@ h2 { font-size: var(--font-h2); }
 
 .detail-card__actions { margin-top: var(--space-4); }
 .detail-card__notice { margin-top: var(--space-3); color: var(--accent); font-size: var(--font-caption); }
+.detail-card__avatar { display: inline-block; width: 24px; height: 24px; margin-right: var(--space-2); border-radius: var(--radius-avatar); object-fit: cover; vertical-align: middle; }
+.post-card__avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
 
 /* Post list container */
 .post-list {
