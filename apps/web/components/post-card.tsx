@@ -7,7 +7,7 @@ type PostCardData = {
   title: string;
   body?: string;
   created_at: string;
-  author: { display_name: string; avatar?: string };
+  author: { id?: string; display_name: string; avatar_url?: string | null };
   board?: { name: string; slug: string };
   tags?: string[];
   images?: string[];
@@ -15,15 +15,16 @@ type PostCardData = {
 };
 
 export function PostCard({ post }: { post: PostCardData }) {
+  const authorHref = post.author.id ? `/users/${post.author.id}` : "#";
   return (
     <article className="post-card">
       {/* 头部: 头像+作者+时间 */}
       <div className="post-card__header">
-        <a href={`/profile/${post.author.display_name}`} className="post-card__avatar">
-          {post.author.display_name[0]}
+        <a href={authorHref} className="post-card__avatar">
+          {post.author.avatar_url ? <img src={post.author.avatar_url} alt={`${post.author.display_name}的头像`} /> : post.author.display_name[0]}
         </a>
         <div className="post-card__meta">
-          <a href={`/profile/${post.author.display_name}`} className="post-card__author">
+          <a href={authorHref} className="post-card__author">
             {post.author.display_name}
           </a>
           <span className="post-card__time">{new Date(post.created_at).toLocaleDateString("zh-CN")}</span>

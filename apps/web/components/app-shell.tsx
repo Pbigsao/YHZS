@@ -18,6 +18,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [stats, setStats] = useState({ members: 0, posts: 0, todayPosts: 0, online: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setRightSidebarCollapsed(window.localStorage.getItem("right-sidebar-collapsed") === "true");
+  }, []);
+
+  const toggleRightSidebar = useCallback(() => {
+    setRightSidebarCollapsed((collapsed) => {
+      const next = !collapsed;
+      window.localStorage.setItem("right-sidebar-collapsed", String(next));
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (isAuthPage) return;
@@ -60,10 +73,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {isAuthPage ? (
         <>{children}</>
       ) : (
-        <div className="app-layout">
+        <div className={`app-layout ${rightSidebarCollapsed ? "app-layout--right-collapsed" : ""}`}>
           <SidebarNav boards={boards} activities={activities} />
           <main className="content-main">{children}</main>
-          <SidebarInfo stats={stats} />
+          <SidebarInfo stats={stats} collapsed={rightSidebarCollapsed} onToggleCollapse={toggleRightSidebar} />
         </div>
       )}
 
